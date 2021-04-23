@@ -1,0 +1,217 @@
+SELECT A.*,
+       CAST(B.AMT AS DECIMAL(18, 2)) AS 金额,
+       CAST(C.AMT AS DECIMAL(18，2)) AS 累计金额,
+       CAST(D.AMT AS DECIMAL(18，2)) AS 去年同期累计金额
+FROM   (SELECT D.CODE_0  AS 代码,
+               A.TEXTE_0 AS 描述
+        FROM   ATABDIV D
+               LEFT OUTER JOIN ATEXTRA A
+                            ON A.CODFIC_0 = 'ATABDIV'
+                               AND A.ZONE_0 = 'LNGDES'
+                               AND A.LANGUE_0 = 'CHI'
+                               AND A.IDENT1_0 = 1607
+                               AND A.IDENT2_0 = D.CODE_0
+        WHERE  D.NUMTAB_0 = 1607 and (D.N1_0='2' or (D.CODE_0 =11247 or D.CODE_0 =11248)) --( D.N1_0='2' or (D.N1_0='1' and (A.Ident2_0=11111 or A.Ident2_0=11112 or A.Ident2_0=11211 or A.Ident2_0=11212)))
+        ) A
+       LEFT OUTER JOIN (SELECT SUBSTR(STT1_0, 1 ,1) AS CODE,
+                               SUM( CASE WHEN (ACC_0  LIKE '101%' OR  ACC_0 LIKE '102%') 
+                               THEN AMTLED_0*SNS_0 ELSE AMTLED_0*SNS_0*-1 END  )    AS AMT
+                        FROM   GACCENTRYD
+                        WHERE  STT1_0 <> ' '
+                               --AND FIY_0 = 2016 - 2014 + 1
+							   and to_char(accdat_0,'yyyy')=2016
+                               AND PER_0 = 1
+                               AND FCYLIN_0 = 'V10'
+                               AND LED_0 = 'CHI'
+                               AND COA_0 = 'CHI'
+                        GROUP  BY SUBSTR(STT1_0, 1 ,1)
+                        UNION ALL
+                        SELECT SUBSTR(STT1_0, 1 ,2) AS CODE,
+                               SUM( CASE WHEN (ACC_0  LIKE '101%' OR  ACC_0 LIKE '102%') 
+                               THEN AMTLED_0*SNS_0 ELSE AMTLED_0*SNS_0*-1 END  )    AS AMT
+                        FROM   GACCENTRYD
+                        WHERE  STT1_0 <> ' '
+                               --AND FIY_0 = 2016 - 2014 + 1
+							   and to_char(accdat_0,'yyyy')=2016
+                               AND PER_0 = 1
+                               AND FCYLIN_0 = 'V10'
+                               AND LED_0 = 'CHI'
+                               AND COA_0 = 'CHI'
+                               AND LENGTH(STT1_0) >= 2
+                        GROUP  BY SUBSTR(STT1_0, 1 ,2)
+                        UNION ALL
+                        SELECT SUBSTR(STT1_0, 1 ,3) AS CODE,
+                               (CASE WHEN MOD(SUBSTR(SUBSTR(STT1_0, 1 ,3),3,1),2)>0 THEN 1 ELSE -1 END)*
+                                SUM( CASE WHEN (ACC_0  LIKE '101%' OR  ACC_0 LIKE '102%') 
+                               THEN AMTLED_0*SNS_0 ELSE AMTLED_0*SNS_0*-1 END )  AS AMT
+                        FROM   GACCENTRYD
+                        WHERE  STT1_0 <> ' '
+                               --AND FIY_0 = 2016 - 2014 + 1
+							   and to_char(accdat_0,'yyyy')=2016
+                               AND PER_0 = 1
+                               AND FCYLIN_0 = 'V10'
+                               AND LED_0 = 'CHI'
+                               AND COA_0 = 'CHI'
+                               AND LENGTH(STT1_0) >= 3
+                        GROUP  BY SUBSTR(STT1_0, 1 ,3)
+                        UNION ALL
+                        SELECT SUBSTR(STT1_0, 1 ,4) AS CODE,
+                               (CASE WHEN MOD(SUBSTR(SUBSTR(STT1_0, 1 ,3),3,1),2)>0 THEN 1 ELSE -1 END)* 
+                               SUM( CASE WHEN (ACC_0  LIKE '101%' OR  ACC_0 LIKE '102%') 
+                               THEN AMTLED_0*SNS_0 ELSE AMTLED_0*SNS_0*-1 END )    AS AMT
+                        FROM   GACCENTRYD
+                        WHERE  STT1_0 <> ' '
+                               --AND FIY_0 = 2016 - 2014 + 1
+							   and to_char(accdat_0,'yyyy')=2016
+                               AND PER_0 = 1
+                               AND FCYLIN_0 = 'V10'
+                               AND LED_0 = 'CHI'
+                               AND COA_0 = 'CHI'
+                               AND LENGTH(STT1_0) >= 4
+                        GROUP  BY SUBSTR(STT1_0, 1 ,4),SUBSTR(STT1_0, 1 ,3)
+                        UNION ALL
+                        SELECT SUBSTR(STT1_0, 1 ,5) AS CODE,
+                              (CASE WHEN MOD(SUBSTR(SUBSTR(STT1_0, 1 ,3),3,1),2)>0 THEN 1 ELSE -1 END)* 
+                               SUM( CASE WHEN (ACC_0  LIKE '101%' OR  ACC_0 LIKE '102%') 
+                               THEN AMTLED_0*SNS_0 ELSE AMTLED_0*SNS_0*-1 END)   AS AMT
+                        FROM   GACCENTRYD
+                        WHERE  STT1_0 <> ' '
+                               --AND FIY_0 = 2016 - 2014 + 1
+							   and to_char(accdat_0,'yyyy')=2016
+                               AND PER_0 = 1
+                               AND FCYLIN_0 = 'V10'
+                               AND LED_0 = 'CHI'
+                               AND COA_0 = 'CHI'
+                               AND LENGTH(STT1_0) >= 5
+                        GROUP  BY SUBSTR(STT1_0, 1 ,5),SUBSTR(STT1_0, 1 ,3)) B
+                    ON B.CODE = A.代码
+                    LEFT OUTER JOIN (SELECT SUBSTR(STT1_0, 1 ,1) AS CODE,
+       
+SUM( CASE WHEN (ACC_0  LIKE '101%' OR  ACC_0 LIKE '102%') THEN AMTLED_0*SNS_0 ELSE AMTLED_0*SNS_0*-1 END  )    AS AMT
+                        FROM   GACCENTRYD
+                        WHERE  STT1_0 <> ' '
+                               --AND FIY_0 = 2016 - 2014 + 1
+							   and to_char(accdat_0,'yyyy')=2016
+                               AND PER_0 <= 1
+                               AND FCYLIN_0 = 'V10'
+                               AND LED_0 = 'CHI'
+                               AND COA_0 = 'CHI'
+                        GROUP  BY SUBSTR(STT1_0, 1 ,1)
+                        UNION ALL
+                        SELECT SUBSTR(STT1_0, 1 ,2) AS CODE,
+        SUM( CASE WHEN (ACC_0  LIKE '101%' OR  ACC_0 LIKE '102%') THEN AMTLED_0*SNS_0 ELSE AMTLED_0*SNS_0*-1 END  )    AS AMT
+                        FROM   GACCENTRYD
+                        WHERE  STT1_0 <> ' '
+                               --AND FIY_0 = 2016 - 2014 + 1
+							   and to_char(accdat_0,'yyyy')=2016
+                               AND PER_0 <= 1
+                               AND FCYLIN_0 = 'V10'
+                               AND LED_0 = 'CHI'
+                               AND COA_0 = 'CHI'
+                               AND LENGTH(STT1_0) >= 2
+                        GROUP  BY SUBSTR(STT1_0, 1 ,2)
+                        UNION ALL
+                        SELECT SUBSTR(STT1_0, 1 ,3) AS CODE,
+                             (CASE WHEN MOD(SUBSTR(SUBSTR(STT1_0, 1 ,3),3,1),2)>0 THEN 1 ELSE -1 END)*SUM( CASE WHEN (ACC_0  LIKE '101%' OR  ACC_0 LIKE '102%') THEN AMTLED_0*SNS_0 ELSE AMTLED_0*SNS_0*-1 END )   AS AMT
+                        FROM   GACCENTRYD
+                        WHERE  STT1_0 <> ' '
+                               --AND FIY_0 = 2016 - 2014 + 1
+							   and to_char(accdat_0,'yyyy')=2016
+                               AND PER_0 <= 1
+                               AND FCYLIN_0 = 'V10'
+                               AND LED_0 = 'CHI'
+                               AND COA_0 = 'CHI'
+                               AND LENGTH(STT1_0) >= 3
+                        GROUP  BY SUBSTR(STT1_0, 1 ,3)
+                        UNION ALL
+                        SELECT SUBSTR(STT1_0, 1 ,4) AS CODE,
+                              (CASE WHEN MOD(SUBSTR(SUBSTR(STT1_0, 1 ,3),3,1),2)>0 THEN 1 ELSE -1 END)*SUM( CASE WHEN (ACC_0  LIKE '101%' OR  ACC_0 LIKE '102%') THEN AMTLED_0*SNS_0 ELSE AMTLED_0*SNS_0*-1 END )    AS AMT
+                        FROM   GACCENTRYD
+                        WHERE  STT1_0 <> ' '
+                               --AND FIY_0 = 2016 - 2014 + 1
+							   and to_char(accdat_0,'yyyy')=2016
+                               AND PER_0 <= 1
+                               AND FCYLIN_0 = 'V10'
+                               AND LED_0 = 'CHI'
+                               AND COA_0 = 'CHI'
+                               AND LENGTH(STT1_0) >= 4
+                        GROUP  BY SUBSTR(STT1_0, 1 ,4),SUBSTR(STT1_0, 1 ,3)
+                        UNION ALL
+                        SELECT SUBSTR(STT1_0, 1 ,5) AS CODE,
+                              (CASE WHEN MOD(SUBSTR(SUBSTR(STT1_0, 1 ,3),3,1),2)>0 THEN 1 ELSE -1 END)*SUM( CASE WHEN (ACC_0  LIKE '101%' OR  ACC_0 LIKE '102%') THEN AMTLED_0*SNS_0 ELSE AMTLED_0*SNS_0*-1 END)   AS AMT
+                        FROM   GACCENTRYD
+                        WHERE  STT1_0 <> ' '
+                               --AND FIY_0 = 2016 - 2014 + 1
+							   and to_char(accdat_0,'yyyy')=2016
+                               AND PER_0 <= 1
+                               AND FCYLIN_0 = 'V10'
+                               AND LED_0 = 'CHI'
+                               AND COA_0 = 'CHI'
+                               AND LENGTH(STT1_0) >= 5
+                        GROUP  BY SUBSTR(STT1_0, 1 ,5),SUBSTR(STT1_0, 1 ,3)) C
+                        ON C.CODE=A.代码
+                         LEFT OUTER JOIN (SELECT SUBSTR(STT1_0, 1 ,1) AS CODE,
+                               SUM( CASE WHEN (ACC_0  LIKE '101%' OR  ACC_0 LIKE '102%') THEN AMTLED_0*SNS_0 ELSE AMTLED_0*SNS_0*-1 END  )    AS AMT
+                        FROM   GACCENTRYD
+                        WHERE  STT1_0 <> ' '
+                               --AND FIY_0 = 2016 - 2014 
+							   and to_char(accdat_0,'yyyy')=2016 - 1
+                               AND PER_0 <= 1
+                               AND FCYLIN_0 = 'V10'
+                               AND LED_0 = 'CHI'
+                               AND COA_0 = 'CHI'
+                        GROUP  BY SUBSTR(STT1_0, 1 ,1)
+                        UNION ALL
+                        SELECT SUBSTR(STT1_0, 1 ,2) AS CODE,
+                               SUM( CASE WHEN (ACC_0  LIKE '101%' OR  ACC_0 LIKE '102%') THEN AMTLED_0*SNS_0 ELSE AMTLED_0*SNS_0*-1 END  )    AS AMT
+                        FROM   GACCENTRYD
+                        WHERE  STT1_0 <> ' '
+                               --AND FIY_0 = 2016 - 2014 
+							   and to_char(accdat_0,'yyyy')=2016 - 1
+                               AND PER_0 <= 1
+                               AND FCYLIN_0 = 'V10'
+                               AND LED_0 = 'CHI'
+                               AND COA_0 = 'CHI'
+                               AND LENGTH(STT1_0) >= 2
+                        GROUP  BY SUBSTR(STT1_0, 1 ,2)
+                        UNION ALL
+                        SELECT SUBSTR(STT1_0, 1 ,3) AS CODE,
+                             (CASE WHEN MOD(SUBSTR(SUBSTR(STT1_0, 1 ,3),3,1),2)>0 THEN 1 ELSE -1 END)*SUM( CASE WHEN (ACC_0  LIKE '101%' OR  ACC_0 LIKE '102%') THEN AMTLED_0*SNS_0 ELSE AMTLED_0*SNS_0*-1 END )     AS AMT
+                        FROM   GACCENTRYD
+                        WHERE  STT1_0 <> ' '
+                               --AND FIY_0 = 2016 - 2014 
+							   and to_char(accdat_0,'yyyy')=2016 - 1
+                               AND PER_0 <= 1
+                               AND FCYLIN_0 = 'V10'
+                               AND LED_0 = 'CHI'
+                               AND COA_0 = 'CHI'
+                               AND LENGTH(STT1_0) >= 3
+                        GROUP  BY SUBSTR(STT1_0, 1 ,3)
+                        UNION ALL
+                        SELECT SUBSTR(STT1_0, 1 ,4) AS CODE,
+                              (CASE WHEN MOD(SUBSTR(SUBSTR(STT1_0, 1 ,3),3,1),2)>0 THEN 1 ELSE -1 END)*SUM( CASE WHEN (ACC_0  LIKE '101%' OR  ACC_0 LIKE '102%') THEN AMTLED_0*SNS_0 ELSE AMTLED_0*SNS_0*-1 END )     AS AMT
+                        FROM   GACCENTRYD
+                        WHERE  STT1_0 <> ' '
+                               --AND FIY_0 = 2016 - 2014 
+							   and to_char(accdat_0,'yyyy')=2016 - 1
+                               AND PER_0 <= 1
+                               AND FCYLIN_0 = 'V10' 
+                               AND LED_0 = 'CHI'
+                               AND COA_0 = 'CHI'
+                               AND LENGTH(STT1_0) >= 4
+                        GROUP  BY SUBSTR(STT1_0, 1 ,4),SUBSTR(STT1_0, 1 ,3)
+                        UNION ALL
+                        SELECT SUBSTR(STT1_0, 1 ,5) AS CODE,
+                              (CASE WHEN MOD(SUBSTR(SUBSTR(STT1_0, 1 ,3),3,1),2)>0 THEN 1 ELSE -1 END)*SUM( CASE WHEN (ACC_0  LIKE '101%' OR  ACC_0 LIKE '102%') THEN AMTLED_0*SNS_0 ELSE AMTLED_0*SNS_0*-1 END)   AS AMT
+                        FROM   GACCENTRYD
+                        WHERE  STT1_0 <> ' '
+                               --AND FIY_0 = 2016 - 2014 
+							   and to_char(accdat_0,'yyyy')=2016 - 1
+                               AND PER_0 <= 1
+                               AND FCYLIN_0 = 'V10'
+                               AND LED_0 = 'CHI'
+                               AND COA_0 = 'CHI'
+                               AND LENGTH(STT1_0) >= 5
+                        GROUP  BY SUBSTR(STT1_0, 1 ,5),SUBSTR(STT1_0, 1 ,3)) D
+                        ON D.CODE=A.代码
+ORDER  BY RPAD(A.代码,5,'Z') --A.代码
