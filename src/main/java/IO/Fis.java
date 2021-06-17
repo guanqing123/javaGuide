@@ -12,6 +12,8 @@ import java.io.InputStream;
  **/
 public class Fis {
 
+    public static final String filePath = "src/main/resources/现金流量代码.txt";
+
     /**
     * @ Author:guanqing
     * @ Date 2021/4/24 12:47
@@ -23,7 +25,7 @@ public class Fis {
         long start = System.currentTimeMillis();
         InputStream in = null;
         try {
-            in = new FileInputStream("src/main/resources/现金流量代码.txt");
+            in = new FileInputStream(filePath);
             int n;
             while ((n = in.read()) != -1) {
                 System.out.print(n);
@@ -49,13 +51,16 @@ public class Fis {
         InputStream in = null;
 
         try {
-            in = new FileInputStream("src/main/resources/现金流量代码.txt");
+            in = new FileInputStream(filePath);
             byte[] buffer = new byte[1024];
             int tn;
+            StringBuilder sb = new StringBuilder();
             while ((tn = in.read(buffer)) != -1){
                 System.out.print("read "+ tn + " bytes.");
+                sb.append(new String(buffer, "UTF-8"));
             }
             System.out.println();
+            System.out.println("sb>>"+sb.toString());
         } finally {
             if (in != null)
                 in.close();
@@ -117,7 +122,7 @@ public class Fis {
     * @ return void
     **/
     public static void readLocal() throws IOException {
-        InputStream in = new FileInputStream("src/main/resources/现金流量代码.txt");
+        InputStream in = new FileInputStream(filePath);
         readAsString(in);
     }
 
@@ -138,7 +143,8 @@ public class Fis {
         /*read();
         readBuffer();
         readBAIS();
-        readLocal();*/
-        readMemory();
+        readLocal();
+        readMemory();*/
+        readBuffer();
     }
 }
