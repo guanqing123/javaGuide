@@ -1,9 +1,6 @@
 package liaoxuefeng.collection;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.Properties;
 
 /**
@@ -14,7 +11,8 @@ import java.util.Properties;
 public class PropertiesTest {
 
     public static void main(String[] args) throws IOException {
-        loadProperties();
+//        loadProperties();
+        readMemory();
     }
 
     public static void loadProperties() throws IOException {
@@ -40,5 +38,14 @@ public class PropertiesTest {
         String interval = props.getProperty("auto_save_interval", "120");
 
         System.out.println("filePath:" + filePath +"\t"+"interval:"+interval);
+    }
+
+    public static void readMemory() throws IOException {
+        String str = "#这是字符串测试\n"+"name=guanqing\n"+"email=guanqinghz@163.com\n";
+        ByteArrayInputStream bais = new ByteArrayInputStream(str.getBytes("UTF-8"));
+        Properties pros = new Properties();
+        pros.load(bais);
+
+        System.out.println(pros.getProperty("name") +"\t"+ pros.getProperty("email"));
     }
 }
