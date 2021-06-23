@@ -7,6 +7,15 @@
     <groupId>groupId</groupId>
     <artifactId>javaGuide</artifactId>
     <version>1.0-SNAPSHOT</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.7.2</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>
